@@ -16,7 +16,14 @@ class AfterTaxWithdrawalInvestmentScenario(
     private val yearlyPriceProvider: YearlyPriceProvider,
     private val verbose: Boolean,
 ): InvestmentScenario {
-    override fun simulate(strategy: BaseInvestmentStrategy): InvestmentScenarioResult {
+    override fun simulate(strategy: BaseInvestmentStrategy): List<InvestmentScenarioResult> {
+        val result = mutableListOf<InvestmentScenarioResult>()
+        result += InvestmentScenarioResult(
+            investmentValue = Money.zero(yearlyInvestment.currency),
+            withdrawnValue = Money.zero(yearlyInvestment.currency),
+            withdrawalYears = 0,
+            taxValue = Money.zero(yearlyInvestment.currency)
+        )
         var year = 1
         val priceProvider: (assetName: String) -> MonetaryAmount = {
             assetName -> yearlyPriceProvider.getPriceInYear(year, assetName)
@@ -41,13 +48,14 @@ class AfterTaxWithdrawalInvestmentScenario(
                 withdrawnValue += currentValueAfterTax
                 strategy.sellAfterTaxValue(priceProvider, currentValueAfterTax, tax)
             }
+            result += InvestmentScenarioResult(
+                investmentValue = yearlyInvestment * investmentYears,
+                withdrawnValue = withdrawnValue.with(rounding),
+                withdrawalYears = withdrawalYears,
+                taxValue = taxValue.with(rounding)
+            )
             year++
         }
-        return InvestmentScenarioResult(
-            investmentValue = yearlyInvestment * investmentYears,
-            withdrawnValue = withdrawnValue.with(rounding),
-            withdrawalYears = withdrawalYears,
-            taxValue = taxValue.with(rounding)
-        )
+        return result
     }
 }

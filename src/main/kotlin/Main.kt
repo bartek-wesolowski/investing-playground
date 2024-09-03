@@ -19,8 +19,8 @@ fun main() {
         ),
         verbose = verbose,
     )
-    println(scenario.simulate(SimpleInvestmentStrategy(verbose = verbose)))
-    println(scenario.simulate(LifoInvestmentStrategy(verbose = verbose)))
-    println(scenario.simulate(BucketInvestmentStrategy(verbose = verbose, bucket = 500_000.usd)))
+    println(scenario.simulate(SimpleInvestmentStrategy(verbose = verbose)).last())
+    println(scenario.simulate(LifoInvestmentStrategy(verbose = verbose)).last())
+    println(scenario.simulate(BucketInvestmentStrategy(verbose = verbose, bucket = 500_000.usd)).last())
 }
 

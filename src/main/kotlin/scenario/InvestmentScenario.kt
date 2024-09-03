@@ -3,5 +3,5 @@ package com.bartoszwesolowski.scenario
 import com.bartoszwesolowski.strategy.BaseInvestmentStrategy
 
 interface InvestmentScenario {
-    fun simulate(strategy: BaseInvestmentStrategy): InvestmentScenarioResult
+    fun simulate(strategy: BaseInvestmentStrategy): List<InvestmentScenarioResult>
 }
