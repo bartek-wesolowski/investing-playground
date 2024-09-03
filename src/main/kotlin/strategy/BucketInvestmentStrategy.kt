@@ -3,7 +3,6 @@ package com.bartoszwesolowski.strategy
 import com.bartoszwesolowski.model.PriceProvider
 import nl.hiddewieringa.money.minus
 import org.javamoney.moneta.Money
-import javax.money.Monetary
 import javax.money.MonetaryAmount
 
 class BucketInvestmentStrategy(
