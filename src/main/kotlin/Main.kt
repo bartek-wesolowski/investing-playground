@@ -5,7 +5,6 @@ import com.bartoszwesolowski.scenario.AfterTaxWithdrawalInvestmentScenario
 import com.bartoszwesolowski.strategy.BucketInvestmentStrategy
 import com.bartoszwesolowski.strategy.LifoInvestmentStrategy
 import com.bartoszwesolowski.strategy.SimpleInvestmentStrategy
-import org.javamoney.moneta.Money
 
 fun main() {
     val verbose = false
@@ -22,6 +21,6 @@ fun main() {
     )
     println(scenario.simulate(SimpleInvestmentStrategy(verbose = verbose)))
     println(scenario.simulate(LifoInvestmentStrategy(verbose = verbose)))
-    println(scenario.simulate(BucketInvestmentStrategy(verbose = verbose, bucket = Money.of(500_000, "USD"))))
+    println(scenario.simulate(BucketInvestmentStrategy(verbose = verbose, bucket = 500_000.usd)))
 }
 
