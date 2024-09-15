@@ -24,7 +24,8 @@ open class ManualInvestmentStrategy(verbose: Boolean) : BaseInvestmentStrategy(v
             val currentPrice = priceProvider.getPrice(ASSET_NAME)
             val assetValue = account.currentAssetValue(assetName, currentPrice)
             if (assetValue >= remainingValue) {
-                return account.sellValue(assetName, remainingValue, currentPrice, tax)
+                taxValue += account.sellValue(assetName, remainingValue, currentPrice, tax)
+                return taxValue
             } else {
                 taxValue += account.sellValue(assetName, assetValue, currentPrice, tax)
                 remainingValue -= assetValue
