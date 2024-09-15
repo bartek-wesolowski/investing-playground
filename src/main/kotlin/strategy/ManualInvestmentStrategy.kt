@@ -46,13 +46,16 @@ open class ManualInvestmentStrategy(verbose: Boolean) : BaseInvestmentStrategy(v
         while (remainingValueAfterTax.isPositive) {
             val currentPrice = priceProvider.getPrice(assetName)
             val assetValueAfterTax = account.currentAssetValueAfterTax(assetName, currentPrice, tax)
-            if (assetValueAfterTax >= remainingValueAfterTax) {
-                return account.sellAfterTaxValue(assetName, remainingValueAfterTax, currentPrice, tax)
+            if (assetValueAfterTax > remainingValueAfterTax) {
+                taxValue += account.sellAfterTaxValue(assetName, remainingValueAfterTax, currentPrice, tax)
+                remainingValueAfterTax = Money.zero(afterTaxValue.currency)
             } else {
                 taxValue += account.sellAfterTaxValue(assetName, assetValueAfterTax, currentPrice, tax)
                 remainingValueAfterTax -= assetValueAfterTax
-                assetIndex--
-                assetName = ASSET_NAME + assetIndex
+                if (assetIndex > 1) {
+                    assetIndex--
+                    assetName = ASSET_NAME + assetIndex
+                }
             }
         }
         return taxValue
