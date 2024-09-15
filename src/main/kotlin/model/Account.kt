@@ -31,9 +31,9 @@ class Account(private val verbose: Boolean) {
         assets.first { it.name == assetName }.currentValueAfterTax(currentPrice, tax)
 
     fun buy(assetName: String, price: MonetaryAmount, value: MonetaryAmount) {
-        if (verbose) println("Buying $value of $assetName for unit price of $price")
         val asset = assets.find { it.name == assetName }
         val units = (value / price.number).number.toDouble()
+        if (verbose) println("Buying $units units of $assetName for the total value of $value for unit price of $price")
         if (asset != null) {
             asset.transactions.add(Transaction(price, units))
         } else {
@@ -47,9 +47,9 @@ class Account(private val verbose: Boolean) {
         currentPrice: MonetaryAmount,
         tax: Double
     ): MonetaryAmount {
-        if (verbose) println("Selling $value of $assetName for unit price of $currentPrice")
         val asset = assets.first { it.name == assetName }
         val taxValue = asset.sellValue(value, currentPrice, tax)
+        if (verbose) println("Selling $value of $assetName for unit price of $currentPrice, taxValue: $taxValue")
         if (asset.transactions.isEmpty()) {
             assets.remove(asset)
         }
@@ -62,9 +62,9 @@ class Account(private val verbose: Boolean) {
         currentPrice: MonetaryAmount,
         tax: Double
     ): MonetaryAmount {
-        if (verbose) println("Selling $afterTaxValue (after tax) of $assetName for unit price of $currentPrice")
         val asset = assets.first { it.name == assetName }
         val taxValue = asset.sellAfterTaxValue(afterTaxValue, currentPrice, tax)
+        if (verbose) println("Selling $afterTaxValue (after tax) of $assetName for unit price of $currentPrice, taxValue: $taxValue")
         if (asset.transactions.isEmpty()) {
             assets.remove(asset)
         }
