@@ -18,19 +18,11 @@ class AfterTaxWithdrawalInvestmentScenario(
     private val verbose: Boolean,
 ): InvestmentScenario {
     override fun simulate(strategy: BaseInvestmentStrategy): List<InvestmentState> {
-        val result = mutableListOf<InvestmentState>()
+        val result = mutableListOf(InvestmentState.zero(yearlyInvestment.currency))
         var year = 1
         val priceProvider: (assetName: String) -> MonetaryAmount = {
                 assetName -> yearlyPriceProvider.getPriceInYear(year, assetName)
         }
-        result += InvestmentState(
-            investedValue = Money.zero(yearlyInvestment.currency),
-            value = strategy.currentValue(priceProvider),
-            valueAfterTax = strategy.currentValueAfterTax(priceProvider, tax),
-            withdrawnValue = Money.zero(yearlyInvestment.currency),
-            withdrawnValueAfterTax = Money.zero(yearlyInvestment.currency),
-            taxValue = Money.zero(yearlyInvestment.currency)
-        )
         repeat(investmentYears) {
             if (verbose) println("Year $year")
             strategy.buy(priceProvider, yearlyInvestment)

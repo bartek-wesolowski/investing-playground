@@ -1,5 +1,7 @@
 package com.bartoszwesolowski.scenario
 
+import org.javamoney.moneta.Money
+import javax.money.CurrencyUnit
 import javax.money.MonetaryAmount
 
 data class InvestmentState(
@@ -9,4 +11,15 @@ data class InvestmentState(
     val withdrawnValue: MonetaryAmount,
     val withdrawnValueAfterTax: MonetaryAmount,
     val taxValue: MonetaryAmount,
-)
+) {
+    companion object {
+        fun zero(currencyUnit: CurrencyUnit): InvestmentState = InvestmentState(
+            investedValue = Money.zero(currencyUnit),
+            value = Money.zero(currencyUnit),
+            valueAfterTax = Money.zero(currencyUnit),
+            withdrawnValue = Money.zero(currencyUnit),
+            withdrawnValueAfterTax = Money.zero(currencyUnit),
+            taxValue = Money.zero(currencyUnit)
+        )
+    }
+}
