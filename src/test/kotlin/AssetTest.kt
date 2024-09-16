@@ -1,4 +1,5 @@
 import com.bartoszwesolowski.model.Asset
+import com.bartoszwesolowski.model.SellResult
 import com.bartoszwesolowski.model.Transaction
 import com.bartoszwesolowski.usd
 import java.util.LinkedList
@@ -33,7 +34,7 @@ class AssetTest {
     }
 
     @Test
-    fun testSellValue() {
+    fun testSell() {
         val asset = Asset(
             "ETF1",
             LinkedList<Transaction>().apply {
@@ -42,8 +43,14 @@ class AssetTest {
             }
         )
 
-        val taxValue = asset.sellValue(2600.usd, 200.usd, 0.19)
-        assertEquals(218.5.usd, taxValue)
+        val result = asset.sell(2600.usd, 200.usd, 0.19)
+        assertEquals(
+            SellResult(
+                value = 2600.usd,
+                valueAfterTax = 2381.5.usd,
+                taxValue = 218.50.usd
+            ), result
+        )
         assertEquals(
             Asset(
                 "ETF1",
@@ -56,7 +63,7 @@ class AssetTest {
     }
 
     @Test
-    fun testSellAfterTaxValue() {
+    fun testSellAfterTax() {
         val asset = Asset(
             "ETF1",
             LinkedList<Transaction>().apply {
@@ -65,8 +72,14 @@ class AssetTest {
             }
         )
 
-        val taxValue = asset.sellAfterTaxValue(2381.5.usd, 200.usd, 0.19)
-        assertEquals(218.5.usd, taxValue)
+        val result = asset.sellAfterTax(2381.5.usd, 200.usd, 0.19)
+        assertEquals(
+            SellResult(
+                value = 2600.usd,
+                valueAfterTax = 2381.5.usd,
+                taxValue = 218.5.usd
+            ), result
+        )
         assertEquals(
             Asset(
                 "ETF1",

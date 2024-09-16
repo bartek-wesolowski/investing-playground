@@ -2,6 +2,7 @@ package com.bartoszwesolowski.model
 
 import nl.hiddewieringa.money.div
 import nl.hiddewieringa.money.minus
+import nl.hiddewieringa.money.plus
 import nl.hiddewieringa.money.times
 import javax.money.MonetaryAmount
 
@@ -20,19 +21,28 @@ data class Transaction(
         return currentValue - taxValue
     }
 
-    fun sellValue(value: MonetaryAmount, currentPrice: MonetaryAmount, tax: Double): MonetaryAmount {
+    fun sell(value: MonetaryAmount, currentPrice: MonetaryAmount, tax: Double): SellResult {
         val unitsSold = (value / currentPrice.number).number.toDouble()
         val profit = value - unitsSold * buyPrice
         units -= unitsSold
-        return profit * tax
+        val taxValue = profit * tax
+        return SellResult(
+            value = value,
+            valueAfterTax = value - taxValue,
+            taxValue = taxValue
+        )
     }
 
-    fun sellValueAfterTax(afterTaxValue: MonetaryAmount, currentPrice: MonetaryAmount, tax: Double): MonetaryAmount {
-        val value = afterTaxValue / (1 - tax * (1 - (buyPrice / currentPrice.number).number.toDouble()))
+    fun sellAfterTax(valueAfterTax: MonetaryAmount, currentPrice: MonetaryAmount, tax: Double): SellResult {
+        val value = valueAfterTax / (1 - tax * (1 - (buyPrice / currentPrice.number).number.toDouble()))
         val unitsSold = (value / currentPrice.number).number.toDouble()
         val profit = value - unitsSold * buyPrice
         val taxValue = profit * tax
         units -= (value / currentPrice.number).number.toDouble()
-        return taxValue
+        return SellResult(
+            value = valueAfterTax + taxValue,
+            valueAfterTax = valueAfterTax,
+            taxValue = taxValue,
+        )
     }
 }

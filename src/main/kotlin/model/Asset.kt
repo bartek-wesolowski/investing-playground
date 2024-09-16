@@ -19,9 +19,9 @@ data class Asset(
         .map { it.currentValueAfterTax(currentPrice, tax)}
         .reduce { sum, value -> sum + value }
 
-    fun sellValue(value: MonetaryAmount, currentPrice: MonetaryAmount, tax: Double): MonetaryAmount {
+    fun sell(value: MonetaryAmount, currentPrice: MonetaryAmount, tax: Double): SellResult {
         var remainingValue = value
-        var taxValue: MonetaryAmount = Money.zero(value.currency)
+        var result = SellResult.zero(value.currency)
         while (remainingValue.isPositive) {
             val transaction = transactions.first()
             val currentValue = transaction.currentValue(currentPrice)
@@ -29,18 +29,24 @@ data class Asset(
                 transactions.removeFirst()
                 val profit = currentValue - transaction.buyValue()
                 remainingValue -= currentValue
-                taxValue += profit * tax
+                val taxValue = profit * tax
+                result = SellResult(
+                    value = result.value + currentValue,
+                    valueAfterTax = result.valueAfterTax + currentValue - taxValue,
+                    taxValue = result.taxValue + taxValue
+                )
             } else {
-                taxValue += transaction.sellValue(remainingValue, currentPrice, tax)
+                val transactionResult = transaction.sell(remainingValue, currentPrice, tax)
+                result += transactionResult
                 remainingValue = Money.zero(value.currency)
             }
         }
-        return taxValue
+        return result
     }
 
-    fun sellAfterTaxValue(afterTaxValue: MonetaryAmount, currentPrice: MonetaryAmount, tax: Double): MonetaryAmount {
+    fun sellAfterTax(afterTaxValue: MonetaryAmount, currentPrice: MonetaryAmount, tax: Double): SellResult {
         var remainingValue = afterTaxValue
-        var taxValue: MonetaryAmount = Money.zero(afterTaxValue.currency)
+        var result = SellResult.zero(afterTaxValue.currency)
         while (remainingValue.isPositive) {
             val transaction = transactions.first()
             val currentValueAfterTax = transaction.currentValueAfterTax(currentPrice, tax)
@@ -49,12 +55,17 @@ data class Asset(
                 val profit = transaction.currentValue(currentPrice) - transaction.buyValue()
                 val transactionTax = profit * tax
                 remainingValue -= currentValueAfterTax
-                taxValue += transactionTax
+                result = SellResult(
+                    value = result.value + currentValueAfterTax + transactionTax,
+                    valueAfterTax = result.valueAfterTax + currentValueAfterTax,
+                    taxValue = result.taxValue + transactionTax
+                )
             } else {
-                taxValue += transaction.sellValueAfterTax(remainingValue, currentPrice, tax)
+                val transactionResult = transaction.sellAfterTax(remainingValue, currentPrice, tax)
+                result += transactionResult
                 remainingValue = Money.zero(afterTaxValue.currency)
             }
         }
-        return taxValue
+        return result
     }
 }

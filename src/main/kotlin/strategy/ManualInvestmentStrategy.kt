@@ -1,5 +1,6 @@
 package com.bartoszwesolowski.strategy
 
+import com.bartoszwesolowski.model.SellResult
 import com.bartoszwesolowski.model.PriceProvider
 import nl.hiddewieringa.money.minus
 import nl.hiddewieringa.money.plus
@@ -12,46 +13,46 @@ open class ManualInvestmentStrategy(verbose: Boolean) : BaseInvestmentStrategy(v
     override fun buy(priceProvider: PriceProvider, value: MonetaryAmount) =
         account.buy(ASSET_NAME + assetIndex, priceProvider.getPrice(ASSET_NAME), value)
 
-    override fun sellValue(
+    override fun sell(
         priceProvider: PriceProvider,
         value: MonetaryAmount,
         tax: Double
-    ): MonetaryAmount {
+    ): SellResult {
         var assetName = ASSET_NAME + assetIndex
         var remainingValue = value
-        var taxValue: MonetaryAmount = Money.zero(value.currency)
+        var sellResult = SellResult.zero(value.currency)
         while (remainingValue.isPositive) {
             val currentPrice = priceProvider.getPrice(ASSET_NAME)
             val assetValue = account.currentAssetValue(assetName, currentPrice)
             if (assetValue >= remainingValue) {
-                taxValue += account.sellValue(assetName, remainingValue, currentPrice, tax)
-                return taxValue
+                sellResult += account.sell(assetName, remainingValue, currentPrice, tax)
+                return sellResult
             } else {
-                taxValue += account.sellValue(assetName, assetValue, currentPrice, tax)
+                sellResult += account.sell(assetName, assetValue, currentPrice, tax)
                 remainingValue -= assetValue
                 assetIndex--
                 assetName = ASSET_NAME + assetIndex
             }
         }
-        return taxValue
+        return sellResult
     }
 
-    override fun sellAfterTaxValue(
+    override fun sellAfterTax(
         priceProvider: PriceProvider,
         afterTaxValue: MonetaryAmount,
         tax: Double
-    ): MonetaryAmount {
+    ): SellResult {
         var assetName = ASSET_NAME + assetIndex
         var remainingValueAfterTax = afterTaxValue
-        var taxValue: MonetaryAmount = Money.zero(afterTaxValue.currency)
+        var sellResult = SellResult.zero(afterTaxValue.currency)
         while (remainingValueAfterTax.isPositive) {
             val currentPrice = priceProvider.getPrice(assetName)
             val assetValueAfterTax = account.currentAssetValueAfterTax(assetName, currentPrice, tax)
             if (assetValueAfterTax > remainingValueAfterTax) {
-                taxValue += account.sellAfterTaxValue(assetName, remainingValueAfterTax, currentPrice, tax)
+                sellResult += account.sellAfterTax(assetName, remainingValueAfterTax, currentPrice, tax)
                 remainingValueAfterTax = Money.zero(afterTaxValue.currency)
             } else {
-                taxValue += account.sellAfterTaxValue(assetName, assetValueAfterTax, currentPrice, tax)
+                sellResult += account.sellAfterTax(assetName, assetValueAfterTax, currentPrice, tax)
                 remainingValueAfterTax -= assetValueAfterTax
                 if (assetIndex > 1) {
                     assetIndex--
@@ -59,7 +60,7 @@ open class ManualInvestmentStrategy(verbose: Boolean) : BaseInvestmentStrategy(v
                 }
             }
         }
-        return taxValue
+        return sellResult
     }
 
     fun newAsset() {

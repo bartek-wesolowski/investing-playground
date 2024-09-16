@@ -1,3 +1,4 @@
+import com.bartoszwesolowski.model.SellResult
 import com.bartoszwesolowski.model.Transaction
 import com.bartoszwesolowski.usd
 import org.junit.jupiter.api.Assertions.*
@@ -17,18 +18,32 @@ class TransactionTest {
     }
 
     @Test
-    fun testSellValue() {
+    fun testSell() {
         val transaction = Transaction(100.usd, 10.0)
-        val taxValue = transaction.sellValue(600.usd, 200.usd, 0.19)
-        assertEquals(57.usd, taxValue)
+        val result = transaction.sell(600.usd, 200.usd, 0.19)
+        assertEquals(
+            SellResult(
+                value = 600.usd,
+                valueAfterTax = 543.usd,
+                taxValue = 57.usd
+            ),
+            result
+        )
         assertEquals(Transaction(100.usd, 7.0), transaction)
     }
 
     @Test
-    fun testSellValueAfterTax() {
+    fun testSellAfterTax() {
         val transaction = Transaction(100.usd, 10.0)
-        val taxValue = transaction.sellValueAfterTax(543.usd, 200.usd, 0.19)
-        assertEquals(57.usd, taxValue)
+        val result = transaction.sellAfterTax(543.usd, 200.usd, 0.19)
+        assertEquals(
+            SellResult(
+                value = 600.usd,
+                valueAfterTax = 543.usd,
+                taxValue = 57.usd
+            ),
+            result
+        )
         assertEquals(Transaction(100.usd, 7.0), transaction)
     }
 }

@@ -1,5 +1,6 @@
 package com.bartoszwesolowski.scenario
 
+import com.bartoszwesolowski.model.SellResult
 import com.bartoszwesolowski.model.YearlyPriceProvider
 import com.bartoszwesolowski.strategy.BaseInvestmentStrategy
 import nl.hiddewieringa.money.plus
@@ -16,52 +17,52 @@ class NominalValueWithdrawalInvestmentScenario(
     private val yearlyPriceProvider: YearlyPriceProvider,
     private val verbose: Boolean,
 ): InvestmentScenario {
-    override fun simulate(strategy: BaseInvestmentStrategy): List<InvestmentScenarioResult> {
-        val result = mutableListOf<InvestmentScenarioResult>()
+    override fun simulate(strategy: BaseInvestmentStrategy): List<InvestmentState> {
+        val result = mutableListOf<InvestmentState>()
         var year = 1
         val priceProvider: (assetName: String) -> MonetaryAmount = {
                 assetName -> yearlyPriceProvider.getPriceInYear(year, assetName)
         }
-        result += InvestmentScenarioResult(
-            investmentValue = Money.zero(yearlyInvestment.currency),
-            accountValue = strategy.currentValue(priceProvider),
-            accountValueAfterTax = strategy.currentValueAfterTax(priceProvider, tax),
+        result += InvestmentState(
+            investedValue = Money.zero(yearlyInvestment.currency),
+            value = strategy.currentValue(priceProvider),
+            valueAfterTax = strategy.currentValueAfterTax(priceProvider, tax),
+            withdrawnValue = Money.zero(yearlyInvestment.currency),
             withdrawnValueAfterTax = Money.zero(yearlyInvestment.currency),
             taxValue = Money.zero(yearlyInvestment.currency)
         )
         repeat(investmentYears) {
             if (verbose) println("Year $year")
             strategy.buy(priceProvider, yearlyInvestment)
-            result += InvestmentScenarioResult(
-                investmentValue = yearlyInvestment * year,
-                accountValue = strategy.currentValue(priceProvider),
-                accountValueAfterTax = strategy.currentValueAfterTax(priceProvider, tax),
+            result += InvestmentState(
+                investedValue = yearlyInvestment * year,
+                value = strategy.currentValue(priceProvider),
+                valueAfterTax = strategy.currentValueAfterTax(priceProvider, tax),
+                withdrawnValue = Money.zero(yearlyInvestment.currency),
                 withdrawnValueAfterTax = Money.zero(yearlyInvestment.currency),
                 taxValue = Money.zero(yearlyInvestment.currency)
             )
             year++
         }
-        var withdrawnValue: MonetaryAmount = Money.zero(yearlyInvestment.currency)
-        var taxValue: MonetaryAmount = Money.zero(yearlyInvestment.currency)
+        var sellResult = SellResult.zero(yearlyInvestment.currency)
         var withdrawalYears = 0
         val rounding = Monetary.getRounding(yearlyInvestment.currency)
         while (strategy.currentValueAfterTax(priceProvider, tax).isPositive) {
             if (verbose) println("Year $year")
             withdrawalYears++
             val currentValue = strategy.currentValue(priceProvider)
-            taxValue += if (yearlyWithdrawal <= currentValue) {
-                withdrawnValue += yearlyWithdrawal
-                strategy.sellValue(priceProvider, yearlyWithdrawal, tax)
+            sellResult += if (yearlyWithdrawal <= currentValue) {
+                strategy.sell(priceProvider, yearlyWithdrawal, tax)
             } else {
-                withdrawnValue += currentValue
-                strategy.sellValue(priceProvider, currentValue, tax)
+                strategy.sell(priceProvider, currentValue, tax)
             }
-            result += InvestmentScenarioResult(
-                investmentValue = yearlyInvestment * investmentYears,
-                accountValue = strategy.currentValue(priceProvider),
-                accountValueAfterTax = strategy.currentValueAfterTax(priceProvider, tax),
-                withdrawnValueAfterTax = withdrawnValue.with(rounding),
-                taxValue = taxValue.with(rounding)
+            result += InvestmentState(
+                investedValue = yearlyInvestment * investmentYears,
+                value = strategy.currentValue(priceProvider),
+                valueAfterTax = strategy.currentValueAfterTax(priceProvider, tax),
+                withdrawnValue = sellResult.value.with(rounding),
+                withdrawnValueAfterTax = sellResult.valueAfterTax.with(rounding),
+                taxValue = sellResult.valueAfterTax.with(rounding)
             )
             year++
         }
