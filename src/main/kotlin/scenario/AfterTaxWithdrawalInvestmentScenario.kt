@@ -13,6 +13,7 @@ class AfterTaxWithdrawalInvestmentScenario(
     private val yearlyInvestment: MonetaryAmount,
     private val investmentYears: Int,
     private val yearlyWithdrawalAfterTax: MonetaryAmount,
+    private val maxWithdrawalYears: Int,
     private val yearlyPriceProvider: YearlyPriceProvider,
     private val verbose: Boolean,
 ): InvestmentScenario {
@@ -45,7 +46,7 @@ class AfterTaxWithdrawalInvestmentScenario(
         var taxValue: MonetaryAmount = Money.zero(yearlyInvestment.currency)
         var withdrawalYears = 0
         val rounding = Monetary.getRounding(yearlyInvestment.currency)
-        while (strategy.currentValueAfterTax(priceProvider, tax).isPositive) {
+        while (year < investmentYears + maxWithdrawalYears && strategy.currentValueAfterTax(priceProvider, tax).isPositive) {
             if (verbose) println("Year $year")
             withdrawalYears++
             val currentValueAfterTax = strategy.currentValueAfterTax(priceProvider, tax)

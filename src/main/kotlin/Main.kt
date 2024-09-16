@@ -1,6 +1,6 @@
 package com.bartoszwesolowski
 
-import com.bartoszwesolowski.model.ExponentialYearlyPriceProvider
+import com.bartoszwesolowski.model.SP500YearlyPriceProvider
 import com.bartoszwesolowski.scenario.AfterTaxWithdrawalInvestmentScenario
 import com.bartoszwesolowski.strategy.BucketInvestmentStrategy
 import com.bartoszwesolowski.strategy.LifoInvestmentStrategy
@@ -11,11 +11,11 @@ fun main() {
     val scenario = AfterTaxWithdrawalInvestmentScenario(
         tax = 0.19,
         yearlyInvestment = 100_000.usd,
-        investmentYears = 16,
+        investmentYears = 14,
         yearlyWithdrawalAfterTax = 180_000.usd,
-        yearlyPriceProvider = ExponentialYearlyPriceProvider(
-            initialPrice = 100.usd,
-            growthRate = 0.05
+        maxWithdrawalYears = 20,
+        yearlyPriceProvider = SP500YearlyPriceProvider(
+            initialPrice = 100.usd
         ),
         verbose = verbose,
     )
