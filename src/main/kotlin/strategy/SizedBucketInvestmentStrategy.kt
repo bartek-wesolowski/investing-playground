@@ -5,7 +5,7 @@ import nl.hiddewieringa.money.minus
 import org.javamoney.moneta.Money
 import javax.money.MonetaryAmount
 
-class BucketInvestmentStrategy(
+class SizedBucketInvestmentStrategy(
     verbose: Boolean,
     private val bucket: MonetaryAmount
 ) : ManualInvestmentStrategy(verbose) {
