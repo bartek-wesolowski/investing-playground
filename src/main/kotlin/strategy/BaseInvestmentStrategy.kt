@@ -3,6 +3,7 @@ package com.bartoszwesolowski.strategy
 import com.bartoszwesolowski.model.Account
 import com.bartoszwesolowski.model.PriceProvider
 import com.bartoszwesolowski.model.SellResult
+import com.bartoszwesolowski.scenario.InvestmentState
 import javax.money.MonetaryAmount
 
 abstract class BaseInvestmentStrategy(verbose: Boolean) {
@@ -13,6 +14,9 @@ abstract class BaseInvestmentStrategy(verbose: Boolean) {
 
     fun currentValueAfterTax(priceProvider: PriceProvider, tax: Double): MonetaryAmount =
         account.currentValueAfterTax(priceProvider, tax)
+
+    fun currentState(priceProvider: PriceProvider, tax: Double): InvestmentState =
+        account.currentState(priceProvider, tax)
 
     abstract fun buy(priceProvider: PriceProvider, value: MonetaryAmount)
 

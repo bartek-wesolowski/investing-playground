@@ -13,7 +13,7 @@ data class InvestmentState(
     val taxValue: MonetaryAmount,
 ) {
     companion object {
-        fun zero(currencyUnit: CurrencyUnit): InvestmentState = InvestmentState(
+        fun initial(currencyUnit: CurrencyUnit) = InvestmentState(
             investedValue = Money.zero(currencyUnit),
             value = Money.zero(currencyUnit),
             valueAfterTax = Money.zero(currencyUnit),

@@ -2,6 +2,7 @@ package com.bartoszwesolowski.scenario
 
 import com.bartoszwesolowski.model.SellResult
 import com.bartoszwesolowski.model.YearlyPriceProvider
+import com.bartoszwesolowski.model.at
 import com.bartoszwesolowski.strategy.BaseInvestmentStrategy
 import nl.hiddewieringa.money.times
 import org.javamoney.moneta.Money
@@ -18,11 +19,9 @@ class AfterTaxWithdrawalInvestmentScenario(
     private val verbose: Boolean,
 ): InvestmentScenario {
     override fun simulate(strategy: BaseInvestmentStrategy): List<InvestmentState> {
-        val result = mutableListOf(InvestmentState.zero(yearlyInvestment.currency))
+        val result = mutableListOf(InvestmentState.initial(yearlyInvestment.currency))
         var year = 1
-        val priceProvider: (assetName: String) -> MonetaryAmount = {
-                assetName -> yearlyPriceProvider.getPriceInYear(year, assetName)
-        }
+        val priceProvider = yearlyPriceProvider.at(year)
         repeat(investmentYears) {
             if (verbose) println("Year $year")
             strategy.buy(priceProvider, yearlyInvestment)
