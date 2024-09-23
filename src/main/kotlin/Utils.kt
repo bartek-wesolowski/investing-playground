@@ -8,3 +8,5 @@ val Int.usd: MonetaryAmount
 
 val Double.usd: MonetaryAmount
     get() = Money.of(this, "USD")
+
+fun min(a: MonetaryAmount, b: MonetaryAmount): MonetaryAmount = if (a.isLessThan(b)) a else b

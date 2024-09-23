@@ -1,5 +1,6 @@
 package com.bartoszwesolowski.scenario
 
+import com.bartoszwesolowski.min
 import com.bartoszwesolowski.model.YearlyPriceProvider
 import com.bartoszwesolowski.model.at
 import com.bartoszwesolowski.strategy.BaseInvestmentStrategy
@@ -14,12 +15,9 @@ class SellEveryYearUntilZero(
 
     override fun transact(year: Int, strategy: BaseInvestmentStrategy): InvestmentState {
         val priceProvider = yearlyPriceProvider.at(year)
-        check(strategy.currentValue(priceProvider).isPositive) { "No value to sell" }
-        val valueToSell = if (strategy.currentValue(priceProvider) >= value) {
-            value
-        } else {
-            strategy.currentValue(priceProvider)
-        }
+        val currentValue = strategy.currentValue(priceProvider)
+        check(currentValue.isPositive) { "No value to sell" }
+        val valueToSell = min(currentValue, value)
         strategy.sell(priceProvider, valueToSell, tax)
         return strategy.currentState(priceProvider, tax)
     }
