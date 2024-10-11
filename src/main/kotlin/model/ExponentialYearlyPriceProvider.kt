@@ -9,7 +9,7 @@ class ExponentialYearlyPriceProvider(
     private val initialPrice: MonetaryAmount,
     private val growthRate: Double
 ) : YearlyPriceProvider {
-    override fun getPriceInYear(year: Int, assetName: String): MonetaryAmount {
+    override fun getPriceInYear(year: Int): MonetaryAmount {
         return (initialPrice * (1 + growthRate).pow(year - 1)).with(Monetary.getRounding(initialPrice.currency))
     }
 }

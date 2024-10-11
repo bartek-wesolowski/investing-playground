@@ -13,7 +13,7 @@ class SizedBucketInvestmentStrategy(
         var remainingValue = value
         while (remainingValue.isPositive) {
             val lastAsset = account.assets.lastOrNull()
-            val lastAssetValue = lastAsset?.currentValue(priceProvider.getPrice(lastAsset.name))
+            val lastAssetValue = lastAsset?.currentValue(priceProvider.getPrice())
                 ?: Money.zero(value.currency)
             val valueToBuy: MonetaryAmount
             if (lastAssetValue >= bucket) {

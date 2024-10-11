@@ -18,7 +18,7 @@ class SP500YearlyPriceProvider(
         0.1942, -0.0624, 0.2888, 0.1626, 0.2689, -0.1811, 0.1227
     )
 
-    override fun getPriceInYear(year: Int, assetName: String): MonetaryAmount {
+    override fun getPriceInYear(year: Int): MonetaryAmount {
         var price = initialPrice
         for (i in 2..year) {
             price *= 1 + sp500Returns[(i - 2 + offset) % sp500Returns.size]

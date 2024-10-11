@@ -16,14 +16,14 @@ class Account(private val verbose: Boolean) {
     fun currentValue(priceProvider: PriceProvider): MonetaryAmount {
         if (assets.isEmpty()) return 0.usd
         return assets
-            .map { it.currentValue(priceProvider.getPrice(it.name)) }
+            .map { it.currentValue(priceProvider.getPrice()) }
             .reduce { sum, value -> sum + value }
     }
 
     fun currentValueAfterTax(priceProvider: PriceProvider, tax: Double): MonetaryAmount {
         if (assets.isEmpty()) return 0.usd
         return assets
-            .map { it.currentValueAfterTax(priceProvider.getPrice(it.name), tax) }
+            .map { it.currentValueAfterTax(priceProvider.getPrice(), tax) }
             .reduce { sum, value -> sum + value }
     }
     

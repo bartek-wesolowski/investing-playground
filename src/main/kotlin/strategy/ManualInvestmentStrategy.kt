@@ -11,7 +11,7 @@ open class ManualInvestmentStrategy(verbose: Boolean) : BaseInvestmentStrategy(v
     private var assetIndex = 1
 
     override fun buy(priceProvider: PriceProvider, value: MonetaryAmount) =
-        account.buy(ASSET_NAME + assetIndex, priceProvider.getPrice(ASSET_NAME), value)
+        account.buy(ASSET_NAME + assetIndex, priceProvider.getPrice(), value)
 
     override fun sell(
         priceProvider: PriceProvider,
@@ -22,7 +22,7 @@ open class ManualInvestmentStrategy(verbose: Boolean) : BaseInvestmentStrategy(v
         var remainingValue = value
         var sellResult = SellResult.zero(value.currency)
         while (remainingValue.isPositive) {
-            val currentPrice = priceProvider.getPrice(ASSET_NAME)
+            val currentPrice = priceProvider.getPrice()
             val assetValue = account.currentAssetValue(assetName, currentPrice)
             if (assetValue >= remainingValue) {
                 sellResult += account.sell(assetName, remainingValue, currentPrice, tax)
@@ -46,7 +46,7 @@ open class ManualInvestmentStrategy(verbose: Boolean) : BaseInvestmentStrategy(v
         var remainingValueAfterTax = afterTaxValue
         var sellResult = SellResult.zero(afterTaxValue.currency)
         while (remainingValueAfterTax.isPositive) {
-            val currentPrice = priceProvider.getPrice(assetName)
+            val currentPrice = priceProvider.getPrice()
             val assetValueAfterTax = account.currentAssetValueAfterTax(assetName, currentPrice, tax)
             if (assetValueAfterTax > remainingValueAfterTax) {
                 sellResult += account.sellAfterTax(assetName, remainingValueAfterTax, currentPrice, tax)
