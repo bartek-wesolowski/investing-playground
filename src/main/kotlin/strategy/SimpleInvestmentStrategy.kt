@@ -1,24 +1,23 @@
 package com.bartoszwesolowski.strategy
 
 import com.bartoszwesolowski.model.SellResult
-import com.bartoszwesolowski.model.PriceProvider
 import javax.money.MonetaryAmount
 
 class SimpleInvestmentStrategy(verbose: Boolean) : BaseInvestmentStrategy(verbose) {
-    override fun buy(priceProvider: PriceProvider, value: MonetaryAmount) =
-        account.buy(ASSET_NAME, priceProvider.getPrice(), value)
+    override fun buy(currentPrice: MonetaryAmount, value: MonetaryAmount) =
+        account.buy(ASSET_NAME, currentPrice, value)
 
     override fun sell(
-        priceProvider: PriceProvider,
+        currentPrice: MonetaryAmount,
         value: MonetaryAmount,
         tax: Double
-    ): SellResult = account.sell(ASSET_NAME, value, priceProvider.getPrice(), tax)
+    ): SellResult = account.sell(ASSET_NAME, value, currentPrice, tax)
 
     override fun sellAfterTax(
-        priceProvider: PriceProvider,
+        currentPrice: MonetaryAmount,
         afterTaxValue: MonetaryAmount,
         tax: Double
-    ): SellResult = account.sellAfterTax(ASSET_NAME, afterTaxValue, priceProvider.getPrice(), tax)
+    ): SellResult = account.sellAfterTax(ASSET_NAME, afterTaxValue, currentPrice, tax)
 
     private companion object {
         const val ASSET_NAME = "ETF-1"

@@ -1,20 +1,18 @@
 package com.bartoszwesolowski.strategy
 
 import com.bartoszwesolowski.model.SellResult
-import com.bartoszwesolowski.model.PriceProvider
 import nl.hiddewieringa.money.minus
-import nl.hiddewieringa.money.plus
 import org.javamoney.moneta.Money
 import javax.money.MonetaryAmount
 
 open class ManualInvestmentStrategy(verbose: Boolean) : BaseInvestmentStrategy(verbose) {
     private var assetIndex = 1
 
-    override fun buy(priceProvider: PriceProvider, value: MonetaryAmount) =
-        account.buy(ASSET_NAME + assetIndex, priceProvider.getPrice(), value)
+    override fun buy(currentPrice: MonetaryAmount, value: MonetaryAmount) =
+        account.buy(ASSET_NAME + assetIndex, currentPrice, value)
 
     override fun sell(
-        priceProvider: PriceProvider,
+        currentPrice: MonetaryAmount,
         value: MonetaryAmount,
         tax: Double
     ): SellResult {
@@ -22,7 +20,6 @@ open class ManualInvestmentStrategy(verbose: Boolean) : BaseInvestmentStrategy(v
         var remainingValue = value
         var sellResult = SellResult.zero(value.currency)
         while (remainingValue.isPositive) {
-            val currentPrice = priceProvider.getPrice()
             val assetValue = account.currentAssetValue(assetName, currentPrice)
             if (assetValue >= remainingValue) {
                 sellResult += account.sell(assetName, remainingValue, currentPrice, tax)
@@ -38,7 +35,7 @@ open class ManualInvestmentStrategy(verbose: Boolean) : BaseInvestmentStrategy(v
     }
 
     override fun sellAfterTax(
-        priceProvider: PriceProvider,
+        currentPrice: MonetaryAmount,
         afterTaxValue: MonetaryAmount,
         tax: Double
     ): SellResult {
@@ -46,7 +43,6 @@ open class ManualInvestmentStrategy(verbose: Boolean) : BaseInvestmentStrategy(v
         var remainingValueAfterTax = afterTaxValue
         var sellResult = SellResult.zero(afterTaxValue.currency)
         while (remainingValueAfterTax.isPositive) {
-            val currentPrice = priceProvider.getPrice()
             val assetValueAfterTax = account.currentAssetValueAfterTax(assetName, currentPrice, tax)
             if (assetValueAfterTax > remainingValueAfterTax) {
                 sellResult += account.sellAfterTax(assetName, remainingValueAfterTax, currentPrice, tax)

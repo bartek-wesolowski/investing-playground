@@ -1,14 +1,13 @@
 package com.bartoszwesolowski.scenario
 
-import com.bartoszwesolowski.model.YearlyPriceProvider
-import com.bartoszwesolowski.model.at
+import com.bartoszwesolowski.model.PriceProvider
 import com.bartoszwesolowski.strategy.BaseInvestmentStrategy
 import javax.money.MonetaryAmount
 
 class SellEveryYear(
     private val value: MonetaryAmount,
     private val years: Int,
-    private val yearlyPriceProvider: YearlyPriceProvider,
+    private val priceProvider: PriceProvider,
     private val tax: Double,
 ): PartialInvestmentScenario {
     private var startYear: Int = 1
@@ -18,7 +17,7 @@ class SellEveryYear(
     }
 
     override fun transact(year: Int, strategy: BaseInvestmentStrategy): InvestmentState {
-        val priceProvider = yearlyPriceProvider.at(year)
+        val priceProvider = priceProvider.getPriceInYear(year)
         check(strategy.currentValue(priceProvider).isPositive) { "No value to sell" }
         val valueToSell = if (strategy.currentValue(priceProvider) >= value) {
             value
@@ -30,7 +29,7 @@ class SellEveryYear(
     }
 
     override fun isFinished(year: Int, strategy: BaseInvestmentStrategy): Boolean {
-        val priceProvider = yearlyPriceProvider.at(year)
+        val priceProvider = priceProvider.getPriceInYear(year)
         return year - startYear >= years || strategy.currentValue(priceProvider).isZero
     }
 }

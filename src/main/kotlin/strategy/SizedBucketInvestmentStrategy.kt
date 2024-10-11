@@ -1,6 +1,6 @@
 package com.bartoszwesolowski.strategy
 
-import com.bartoszwesolowski.model.PriceProvider
+import com.bartoszwesolowski.min
 import nl.hiddewieringa.money.minus
 import org.javamoney.moneta.Money
 import javax.money.MonetaryAmount
@@ -9,11 +9,11 @@ class SizedBucketInvestmentStrategy(
     verbose: Boolean,
     private val bucket: MonetaryAmount
 ) : ManualInvestmentStrategy(verbose) {
-    override fun buy(priceProvider: PriceProvider, value: MonetaryAmount) {
+    override fun buy(currentPrice: MonetaryAmount, value: MonetaryAmount) {
         var remainingValue = value
         while (remainingValue.isPositive) {
             val lastAsset = account.assets.lastOrNull()
-            val lastAssetValue = lastAsset?.currentValue(priceProvider.getPrice())
+            val lastAssetValue = lastAsset?.currentValue(currentPrice)
                 ?: Money.zero(value.currency)
             val valueToBuy: MonetaryAmount
             if (lastAssetValue >= bucket) {
@@ -22,12 +22,8 @@ class SizedBucketInvestmentStrategy(
             } else {
                 valueToBuy = min(bucket - lastAssetValue, remainingValue)
             }
-            super.buy(priceProvider, valueToBuy)
+            super.buy(currentPrice, valueToBuy)
             remainingValue -= valueToBuy
         }
-    }
-
-    private fun min(a: MonetaryAmount, b: MonetaryAmount): MonetaryAmount {
-        return if (a < b) a else b
     }
 }

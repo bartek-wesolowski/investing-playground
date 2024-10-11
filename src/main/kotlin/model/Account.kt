@@ -13,24 +13,24 @@ class Account(private val verbose: Boolean) {
     private var investedValue: MonetaryAmount = 0.usd
     private var aggregatedSellResult: SellResult = SellResult.zero(Monetary.getCurrency("USD"))
     
-    fun currentValue(priceProvider: PriceProvider): MonetaryAmount {
+    fun currentValue(currentPrice: MonetaryAmount): MonetaryAmount {
         if (assets.isEmpty()) return 0.usd
         return assets
-            .map { it.currentValue(priceProvider.getPrice()) }
+            .map { it.currentValue(currentPrice) }
             .reduce { sum, value -> sum + value }
     }
 
-    fun currentValueAfterTax(priceProvider: PriceProvider, tax: Double): MonetaryAmount {
+    fun currentValueAfterTax(currentPrice: MonetaryAmount, tax: Double): MonetaryAmount {
         if (assets.isEmpty()) return 0.usd
         return assets
-            .map { it.currentValueAfterTax(priceProvider.getPrice(), tax) }
+            .map { it.currentValueAfterTax(currentPrice, tax) }
             .reduce { sum, value -> sum + value }
     }
     
-    fun currentState(priceProvider: PriceProvider, tax: Double) = InvestmentState(
+    fun currentState(currentPrice: MonetaryAmount, tax: Double) = InvestmentState(
         investedValue = investedValue,
-        value = currentValue(priceProvider),
-        valueAfterTax = currentValueAfterTax(priceProvider, tax),
+        value = currentValue(currentPrice),
+        valueAfterTax = currentValueAfterTax(currentPrice, tax),
         withdrawnValue = aggregatedSellResult.value,
         withdrawnValueAfterTax = aggregatedSellResult.valueAfterTax,
         taxValue = aggregatedSellResult.taxValue

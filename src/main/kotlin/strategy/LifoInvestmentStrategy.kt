@@ -1,16 +1,15 @@
 package com.bartoszwesolowski.strategy
 
-import com.bartoszwesolowski.model.PriceProvider
 import javax.money.MonetaryAmount
 
 class LifoInvestmentStrategy(verbose: Boolean) : ManualInvestmentStrategy(verbose) {
     private var isFirstBuy = true
 
-    override fun buy(priceProvider: PriceProvider, value: MonetaryAmount) {
+    override fun buy(currentPrice: MonetaryAmount, value: MonetaryAmount) {
         if (!isFirstBuy) {
             newAsset()
         }
-        super.buy(priceProvider, value)
+        super.buy(currentPrice, value)
         isFirstBuy = false
     }
 }

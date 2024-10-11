@@ -5,10 +5,10 @@ import javax.money.Monetary
 import javax.money.MonetaryAmount
 import kotlin.math.pow
 
-class ExponentialYearlyPriceProvider(
+class ExponentialPriceProvider(
     private val initialPrice: MonetaryAmount,
     private val growthRate: Double
-) : YearlyPriceProvider {
+) : PriceProvider {
     override fun getPriceInYear(year: Int): MonetaryAmount {
         return (initialPrice * (1 + growthRate).pow(year - 1)).with(Monetary.getRounding(initialPrice.currency))
     }

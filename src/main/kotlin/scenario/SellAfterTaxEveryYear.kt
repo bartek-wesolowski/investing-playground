@@ -1,14 +1,13 @@
 package com.bartoszwesolowski.scenario
 
-import com.bartoszwesolowski.model.YearlyPriceProvider
-import com.bartoszwesolowski.model.at
+import com.bartoszwesolowski.model.PriceProvider
 import com.bartoszwesolowski.strategy.BaseInvestmentStrategy
 import javax.money.MonetaryAmount
 
 class SellAfterTaxEveryYear(
     private val valueAfterTax: MonetaryAmount,
     private val years: Int,
-    private val yearlyPriceProvider: YearlyPriceProvider,
+    private val priceProvider: PriceProvider,
     private val tax: Double,
 ): PartialInvestmentScenario {
     private var startYear: Int = 1
@@ -18,18 +17,18 @@ class SellAfterTaxEveryYear(
     }
 
     override fun transact(year: Int, strategy: BaseInvestmentStrategy): InvestmentState {
-        val priceProvider = yearlyPriceProvider.at(year)
-        check(strategy.currentValue(priceProvider).isPositive) { "No value to sell" }
-        val valueToSell = if (strategy.currentValueAfterTax(priceProvider, tax) >= valueAfterTax) {
+        val currentPrice = priceProvider.getPriceInYear(year)
+        check(strategy.currentValue(currentPrice).isPositive) { "No value to sell" }
+        val valueToSell = if (strategy.currentValueAfterTax(currentPrice, tax) >= valueAfterTax) {
             valueAfterTax
         } else {
-            strategy.currentValue(priceProvider)
+            strategy.currentValue(currentPrice)
         }
-        strategy.sellAfterTax(priceProvider, valueToSell, tax)
-        return strategy.currentState(priceProvider, tax)    }
+        strategy.sellAfterTax(currentPrice, valueToSell, tax)
+        return strategy.currentState(currentPrice, tax)    }
 
     override fun isFinished(year: Int, strategy: BaseInvestmentStrategy): Boolean {
-        val priceProvider = yearlyPriceProvider.at(year)
-        return year - startYear >= years || strategy.currentValue(priceProvider).isZero
+        val currentPrice = priceProvider.getPriceInYear(year)
+        return year - startYear >= years || strategy.currentValue(currentPrice).isZero
     }
 }

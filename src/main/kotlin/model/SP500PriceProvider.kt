@@ -4,10 +4,10 @@ import nl.hiddewieringa.money.times
 import javax.money.Monetary
 import javax.money.MonetaryAmount
 
-class SP500YearlyPriceProvider(
+class SP500PriceProvider(
     private val initialPrice: MonetaryAmount,
     private val offset: Int = 0
-) : YearlyPriceProvider {
+) : PriceProvider {
     private val sp500Returns = listOf(
         0.3806, 0.4336, 0.1206, 0.0046, 0.2689, -0.0873, 0.2280, 0.1648, 0.1245, -0.1006,
         0.2398, 0.1106, -0.0850, 0.0010, 0.1431, 0.1915, -0.1466, -0.2697, 0.3720, 0.2384,

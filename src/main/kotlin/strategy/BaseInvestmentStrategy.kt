@@ -1,7 +1,6 @@
 package com.bartoszwesolowski.strategy
 
 import com.bartoszwesolowski.model.Account
-import com.bartoszwesolowski.model.PriceProvider
 import com.bartoszwesolowski.model.SellResult
 import com.bartoszwesolowski.scenario.InvestmentState
 import javax.money.MonetaryAmount
@@ -9,18 +8,33 @@ import javax.money.MonetaryAmount
 abstract class BaseInvestmentStrategy(verbose: Boolean) {
     protected val account = Account(verbose = verbose)
 
-    fun currentValue(priceProvider: PriceProvider): MonetaryAmount =
-        account.currentValue(priceProvider)
+    fun currentValue(currentPrice: MonetaryAmount): MonetaryAmount =
+        account.currentValue(currentPrice)
 
-    fun currentValueAfterTax(priceProvider: PriceProvider, tax: Double): MonetaryAmount =
-        account.currentValueAfterTax(priceProvider, tax)
+    fun currentValueAfterTax(
+        currentPrice: MonetaryAmount,
+        tax: Double
+    ): MonetaryAmount = account.currentValueAfterTax(currentPrice, tax)
 
-    fun currentState(priceProvider: PriceProvider, tax: Double): InvestmentState =
-        account.currentState(priceProvider, tax)
+    fun currentState(
+        currentPrice: MonetaryAmount,
+        tax: Double
+    ): InvestmentState = account.currentState(currentPrice, tax)
 
-    abstract fun buy(priceProvider: PriceProvider, value: MonetaryAmount)
+    abstract fun buy(
+        currentPrice: MonetaryAmount,
+        value: MonetaryAmount
+    )
 
-    abstract fun sell(priceProvider: PriceProvider, value: MonetaryAmount, tax: Double): SellResult
+    abstract fun sell(
+        currentPrice: MonetaryAmount,
+        value: MonetaryAmount,
+        tax: Double
+    ): SellResult
 
-    abstract fun sellAfterTax(priceProvider: PriceProvider, afterTaxValue: MonetaryAmount, tax: Double): SellResult
+    abstract fun sellAfterTax(
+        currentPrice: MonetaryAmount,
+        afterTaxValue: MonetaryAmount,
+        tax: Double
+    ): SellResult
 }

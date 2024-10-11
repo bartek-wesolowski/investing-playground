@@ -1,6 +1,6 @@
 package com.bartoszwesolowski
 
-import com.bartoszwesolowski.model.SP500YearlyPriceProvider
+import com.bartoszwesolowski.model.SP500PriceProvider
 import com.bartoszwesolowski.scenario.BuyEveryYear
 import com.bartoszwesolowski.scenario.CompoundInvestmentScenario
 import com.bartoszwesolowski.scenario.InvestmentState
@@ -16,7 +16,7 @@ import javax.money.format.MonetaryFormats
 
 fun main() {
     val verbose = false
-    val priceProvider = SP500YearlyPriceProvider(100.usd)
+    val priceProvider = SP500PriceProvider(100.usd)
     val tax = 0.19
     val strategies = listOf(
         SimpleInvestmentStrategy(verbose = verbose),
