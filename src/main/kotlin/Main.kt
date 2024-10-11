@@ -8,6 +8,7 @@ import com.bartoszwesolowski.scenario.SellAfterTaxEveryYearUntilZero
 import com.bartoszwesolowski.strategy.SizedBucketInvestmentStrategy
 import com.bartoszwesolowski.strategy.LifoInvestmentStrategy
 import com.bartoszwesolowski.strategy.SimpleInvestmentStrategy
+import com.bartoszwesolowski.strategy.ValueRangeBucketInvestmentStrategy
 import org.javamoney.moneta.format.CurrencyStyle
 import java.util.Locale
 import javax.money.format.AmountFormatQueryBuilder
@@ -21,7 +22,8 @@ fun main() {
     val strategies = listOf(
         SimpleInvestmentStrategy(verbose = verbose),
         LifoInvestmentStrategy(verbose = verbose),
-        SizedBucketInvestmentStrategy(verbose = verbose, bucket = 500_000.usd)
+        SizedBucketInvestmentStrategy(verbose = verbose, bucket = 500_000.usd),
+        ValueRangeBucketInvestmentStrategy(verbose = verbose, bucketSizePercent = 0.5),
     )
     val scenario = CompoundInvestmentScenario(
         listOf(
