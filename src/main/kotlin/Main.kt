@@ -5,9 +5,9 @@ import com.bartoszwesolowski.scenario.BuyEveryYear
 import com.bartoszwesolowski.scenario.CompoundInvestmentScenario
 import com.bartoszwesolowski.scenario.InvestmentState
 import com.bartoszwesolowski.scenario.SellAfterTaxEveryYearUntilZero
-import com.bartoszwesolowski.strategy.SizedBucketInvestmentStrategy
 import com.bartoszwesolowski.strategy.LifoInvestmentStrategy
 import com.bartoszwesolowski.strategy.SimpleInvestmentStrategy
+import com.bartoszwesolowski.strategy.SizedBucketInvestmentStrategy
 import com.bartoszwesolowski.strategy.ValueRangeBucketInvestmentStrategy
 import org.javamoney.moneta.format.CurrencyStyle
 import java.util.Locale
